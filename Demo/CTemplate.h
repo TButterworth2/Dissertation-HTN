@@ -3,6 +3,9 @@
 
 #include <d3d10.h>
 
+#include "MSDefines.h"
+using gen::TUInt32;
+
 namespace DX {
 
 	// This class will act as the template for the models to be made from.
@@ -12,7 +15,7 @@ namespace DX {
 	public:
 
 		// Basic Constructor.
-		CTemplate();
+		CTemplate(TUInt32 ID);
 
 		// Basic Destructor.
 		~CTemplate();
@@ -27,6 +30,11 @@ namespace DX {
 
 		// This function clears all of the data stored for the mesh.
 		void ReleaseResources();
+
+		// Returns the UID of this template. Used by the SceneManager to perform
+		// model creation and rendering.
+		TUInt32 GetUID()
+		{ return m_TemplateID; }
 
 	private:
 
@@ -48,6 +56,8 @@ namespace DX {
 		// Index data for the model stored in a index buffer and the number of indices in the buffer
 		ID3D10Buffer*            mIndexBuffer;
 		unsigned int             mNumIndices;
+
+		TUInt32 m_TemplateID;
 
 	};
 

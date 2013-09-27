@@ -7,7 +7,7 @@ using gen::CImportXFile;
 namespace DX {
 
 	// Basic Constructor.
-	CTemplate::CTemplate()
+	CTemplate::CTemplate(UINT ID)
 	{
 		mHasGeometry = false;
 
@@ -18,6 +18,8 @@ namespace DX {
 
 		mIndexBuffer = 0;
 		mNumIndices = 0;
+
+		m_TemplateID = ID;
 	}
 
 	// Basic Destructor.
