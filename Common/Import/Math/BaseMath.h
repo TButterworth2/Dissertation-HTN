@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "GenDefines.h"
+#include "../Common/GenDefines.h"
 #include "Error.h"
 
 //TODO

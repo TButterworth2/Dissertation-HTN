@@ -15,7 +15,7 @@
 #ifndef GEN_C_VECTOR_2_H_INCLUDED
 #define GEN_C_VECTOR_2_H_INCLUDED
 
-#include "GenDefines.h"
+#include "../Common/GenDefines.h"
 #include "Error.h"
 #include "BaseMath.h"
 

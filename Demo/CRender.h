@@ -37,6 +37,11 @@ namespace DX {
 		// rendered is required as a parameter. Also the texture ID needs to be passed in for the model.
 		void Render(const CMatrix4x4* worldMatrix, ID3D10ShaderResourceView* texture);
 
+		// Returns the effect technique. Used for the loading of the mesh template.
+		ID3D10EffectTechnique* GetTechnique() { return m_pEffectTechnique; }
+
+
+
 		// Sets the colour of the ambient light. The old colour will be overwritten.
 		void SetAmbientLight(float fR, float fG, float fB);
 

@@ -19,8 +19,8 @@ using namespace std;
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "CVector3.h"
-#include "CMatrix4x4.h"
+#include "Math/CVector3.h"
+#include "Math/CMatrix4x4.h"
 #include "MeshData.h"
 
 namespace gen

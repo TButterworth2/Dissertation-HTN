@@ -52,7 +52,7 @@
 #ifndef GEN_C_MATRIX_4X4_H_INCLUDED
 #define GEN_C_MATRIX_4X4_H_INCLUDED
 
-#include "GenDefines.h"
+#include "../Common/GenDefines.h"
 #include "BaseMath.h"
 #include "CVector2.h"
 #include "CVector3.h"
