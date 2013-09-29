@@ -3,8 +3,15 @@
 
 #include <d3d10.h>
 
+#include <vector>
+#include <map>
+using std::vector;
+using std::map;
+
 #include "MSDefines.h"
 using gen::TUInt32;
+
+#include "CModel.h"
 
 namespace DX {
 
@@ -17,7 +24,8 @@ namespace DX {
 		// Basic Constructor.
 		CTemplate(TUInt32 ID);
 
-		// Basic Destructor.
+		// Basic Destructor. Will release all resources that are left including
+		// the model list.
 		~CTemplate();
 
 
@@ -35,6 +43,27 @@ namespace DX {
 		// model creation and rendering.
 		TUInt32 GetUID()
 		{ return m_TemplateID; }
+
+
+		// Creates a new model of this template. Must provide the ID of the model.
+		// Can specify a location for the model to be created at.
+		void CreateModel(TUInt32 modelID, float fX=0.0f, float fY=0.0f, float fZ=0.0f);
+
+		// Removes a model from the scene. Must pass the UID of the model.
+		// Returns true if the model was removed.
+		bool DeleteModel(TUInt32 modelID);
+
+		// Removes all models associated with this template from the scene.
+		void DeleteAllModels();
+
+		// Returns a pointer to a model with a given UID.
+		CModel* GetModelByUID(TUInt32 modelID);
+
+		// Returns a pointer to a model at the specified position in the model list.
+		CModel* GetModelByLocation(TUInt32 modelNumber);
+
+		// Returns the number of models currently associated with this template.
+		TUInt32 ModelCount();
 
 	private:
 
@@ -58,6 +87,8 @@ namespace DX {
 		unsigned int             mNumIndices;
 
 		TUInt32 m_TemplateID;
+
+		vector<CModel*>			m_ModelList;
 
 	};
 

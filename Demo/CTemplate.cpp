@@ -4,6 +4,8 @@ using gen::CImportXFile;
 
 #include "CTemplate.h"
 
+using std::pair;
+
 namespace DX {
 
 	// Basic Constructor.
@@ -28,6 +30,19 @@ namespace DX {
 		if( mHasGeometry )
 		{
 			ReleaseResources();
+		}
+
+		if( m_ModelList.empty() != true )
+		{
+			vector<CModel*>::iterator P;
+			P = m_ModelList.begin();
+
+			while( P != m_ModelList.end() )
+			{
+				delete (*P);
+
+				P++;
+			}
 		}
 	}
 
@@ -205,6 +220,73 @@ namespace DX {
 		mVertexLayout->Release();	mVertexLayout = 0;
 
 		mHasGeometry = false;
+	}
+
+	// Creates a new model of this template. Must provide the ID of the model.
+		// Can specify a location for the model to be created at.
+	void CTemplate::CreateModel(TUInt32 modelID, float fX/*=0.0f*/, float fY/*=0.0f*/, float fZ/*=0.0f*/)
+	{
+		CModel* model = new CModel( modelID, m_TemplateID, fX, fY, fZ );
+
+		m_ModelList.push_back( model );
+	}
+
+	// Removes a model from the scene. Must pass the UID of the model.
+	bool CTemplate::DeleteModel(TUInt32 modelID)
+	{
+		vector<CModel*>::iterator P;
+		P = m_ModelList.begin();
+		while( P != m_ModelList.end() )
+		{
+			if( (*P)->GetUID() == modelID )
+			{
+				m_ModelList.erase( P );
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void CTemplate::DeleteAllModels()
+	{
+		vector<CModel*>::iterator P;
+		P = m_ModelList.begin();
+
+		while( P != m_ModelList.end() )
+		{
+			P = m_ModelList.erase( P );
+		}
+	}
+
+	// Returns a pointer to a model.
+	CModel* CTemplate::GetModelByUID(TUInt32 modelID)
+	{
+		vector<CModel*>::iterator P;
+		P = m_ModelList.begin();
+
+		while( P != m_ModelList.end() )
+		{
+			if( (*P)->GetUID() == modelID )
+				return (*P);
+		}
+
+		return 0;
+	}
+
+	// Returns a pointer to a model at the specified position in the model list.
+	CModel* CTemplate::GetModelByLocation(TUInt32 modelNumber)
+	{
+		if( modelNumber < m_ModelList.size() )
+			return m_ModelList[modelNumber];
+		
+		return NULL;
+	}
+
+	// Returns the number of models currently associated with this template.
+	TUInt32 CTemplate::ModelCount()
+	{
+		return m_ModelList.size();
 	}
 
 }// namespace DX

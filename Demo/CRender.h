@@ -1,7 +1,8 @@
 #ifndef _DEMO__DX_CRENDER_H_
 #define _DEMO__DX_CRENDER_H_
 
-#include <d3dx10.h>
+#include <d3d10.h>
+#include <D3DX10.h>
 
 #include "../Common/Import/Math/CMatrix4x4.h"
 using gen::CMatrix4x4;
@@ -23,8 +24,9 @@ namespace DX {
 	public:
 
 		// The basic contructor of the CRender class.
+		// Pass the full path and name of the FX file and the technique to be used for rendering.
 		// The render setup will be performed here.
-		CRender();
+		CRender(ID3D10Device* device, const char* FXFileName, const char* techniqueName);
 
 		// Basic destructor. Checks to see if the render variables have been released.
 		// If not then they will be released and cleaned up here.
@@ -33,9 +35,12 @@ namespace DX {
 
 	public:
 
+		// Start the render sequence.
+		void RenderStart();
+
 		// This is the main render function. Only one model can be rendered at a time. The world matrix of the model to be
 		// rendered is required as a parameter. Also the texture ID needs to be passed in for the model.
-		void Render(const CMatrix4x4* worldMatrix, ID3D10ShaderResourceView* texture);
+		void RenderModel(const CMatrix4x4* worldMatrix, ID3D10ShaderResourceView* texture);
 
 		// Returns the effect technique. Used for the loading of the mesh template.
 		ID3D10EffectTechnique* GetTechnique() { return m_pEffectTechnique; }
@@ -74,6 +79,18 @@ namespace DX {
 		// These are the variables used to pass the variables to the GPU.
 		ID3D10Effect* m_pEffect;
 		ID3D10EffectTechnique* m_pEffectTechnique;
+
+
+		ID3D10ShaderResourceView* m_pLastTex;
+
+
+		ID3D10EffectVectorVariable*	m_pAmbientLightVar;
+		ID3D10EffectVectorVariable*	m_pSpecularLightVar;
+		ID3D10EffectScalarVariable*	m_pSpecularPowerVar;
+
+		ID3D10EffectShaderResourceVariable*	m_pModelTextureVar;
+
+		ID3D10EffectMatrixVariable*	m_pWorldMatrixVar;
 
 	};
 

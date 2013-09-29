@@ -15,13 +15,13 @@ namespace DX {
 	public:
 
 		// Basic Constructor
-		CModel(TUInt32 ID);
+		CModel(TUInt32 modelID, TUInt32 templateID);
 
 		// Basic Constructor. Set the start position of the model in ( fX, fY, fZ ).
-		explicit CModel(TUInt32 ID, float fX, float fY, float fZ);
+		explicit CModel(TUInt32 modelID, TUInt32 templateID, float fX, float fY, float fZ);
 
 		// Basic Constructor. Set the start position of the model.
-		explicit CModel(TUInt32 ID, const CVector3& position);
+		explicit CModel(TUInt32 modelID, TUInt32 templateID, const CVector3& position);
 
 		// Basic Destructor.
 		// This will delete the WorldMatrix
@@ -44,6 +44,9 @@ namespace DX {
 
 		// Gets the UID of the current model.
 		TUInt32 GetUID();
+
+		// Returns the UID of the models template.
+		TUInt32 GetTemplateID();
 
 		//============================================================
 		// Translation
@@ -118,6 +121,9 @@ namespace DX {
 
 		// The UID of the model. Set in the constructor.
 		TUInt32 m_ModelID;
+
+		// The UID of the models template. This is used in rendering.
+		TUInt32 m_TemplateID;
 
 	};
 

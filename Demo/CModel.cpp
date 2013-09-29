@@ -4,9 +4,11 @@
 namespace DX {
 
 	// Basic Constructor
-	CModel::CModel(unsigned int ID)
+	CModel::CModel(TUInt32 modelID, TUInt32 templateID)
 	{
-		m_ModelID = ID;
+		m_ModelID = modelID;
+
+		m_TemplateID = templateID;
 
 		m_TextureID = 0;
 
@@ -14,9 +16,11 @@ namespace DX {
 	}
 
 	// Basic Constructor. Set the start position of the model in ( fX, fY, fZ ).
-	CModel::CModel(unsigned int ID, float fX, float fY, float fZ)
+	CModel::CModel(TUInt32 modelID, TUInt32 templateID, float fX, float fY, float fZ)
 	{
-		m_ModelID = ID;
+		m_ModelID = modelID;
+
+		m_TemplateID = templateID;
 
 		m_TextureID = 0;
 
@@ -24,9 +28,11 @@ namespace DX {
 	}
 
 	// Basic Constructor. Set the start position of the model.
-	CModel::CModel(unsigned int ID, const CVector3& position)
+	CModel::CModel(TUInt32 modelID, TUInt32 templateID, const CVector3& position)
 	{
-		m_ModelID = ID;
+		m_ModelID = modelID;
+
+		m_TemplateID = templateID;
 
 		m_TextureID = 0;
 
@@ -53,21 +59,26 @@ namespace DX {
 	//============================================================
 
 	// Sets the UID of the texture to be used for rendering.
-	void CModel::SetTextureID(unsigned int texID)
+	void CModel::SetTextureID(TUInt32 texID)
 	{
 		m_TextureID = texID;
 	}
 
 	// Gets the UID of the texture to be used for rendering.
-	unsigned int CModel::GetTextureID()
+	TUInt32 CModel::GetTextureID()
 	{
 		return m_TextureID;
 	}
 
 	// Gets the UID of the current model.
-	unsigned int CModel::GetUID()
+	TUInt32 CModel::GetUID()
 	{
 		return m_ModelID;
+	}
+
+	TUInt32 CModel::GetTemplateID()
+	{
+		return m_TemplateID;
 	}
 
 	//============================================================
