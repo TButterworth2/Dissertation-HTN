@@ -3,6 +3,15 @@
 
 #include <D3DX10.h>
 
+namespace Gen {
+
+	ISceneManager* CreateSceneManager()
+	{
+		return new DX::CSceneManager();
+	}
+
+}// namespace Gen
+
 namespace DX {
 
 	// Basic Constructor.
@@ -53,6 +62,12 @@ namespace DX {
 		return m_NumTemplates++;
 	}
 
+	// Set/Change the texture associated with a template.
+	void CSceneManager::SetTemplateTexture(const char* textureFile, TUInt32 templateID)
+	{
+		m_TemplateList[templateID]->LoadTexture( textureFile, m_pRenderDevice->GetDevice() );
+	}
+
 	// Creates a new render device. The SceneManager can only have 1 render device at a time.
 	bool CSceneManager::CreateRenderDevice(HWND hWnd)
 	{
@@ -81,8 +96,8 @@ namespace DX {
 
 			for(TUInt32 model=0; model < temp->ModelCount(); model++)
 			{
-				CModel* current = temp->GetModelByLocation( model );
-				m_pRender->RenderModel( current->GetWorldMatrix(), m_TextureList[current->GetTextureID()] );
+				CModel* current = temp->GetModelByIndex( model );
+				m_pRender->RenderModel( current->GetWorldMatrix(), temp->GetTexture() );
 			}
 		}
 

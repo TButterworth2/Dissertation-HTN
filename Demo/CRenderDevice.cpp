@@ -149,6 +149,9 @@ namespace DX {
 											D3D10_SDK_VERSION, &sd, &m_pSwapChain, &m_pd3dDevice );
 		if( FAILED( hr ) )
 		{
+			m_pd3dDevice = NULL;
+			m_pSwapChain = NULL;
+
 			MessageBox( NULL, "NO DEVICE OR SWAP CHAIN", "", NULL );
 			return false;
 		}

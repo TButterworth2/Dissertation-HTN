@@ -36,12 +36,6 @@ namespace DX {
 		// Misc
 		//============================================================
 
-		// Sets the UID of the texture to be used for rendering.
-		void SetTextureID(TUInt32 texID);
-
-		// Gets the UID of the texture to be used for rendering.
-		TUInt32 GetTextureID();
-
 		// Gets the UID of the current model.
 		TUInt32 GetUID();
 
@@ -115,9 +109,6 @@ namespace DX {
 
 		// The world matrix of the model.
 		CMatrix4x4* m_pWorldMatrix;
-
-		// The UID of the texture to be used when rendering.
-		TUInt32 m_TextureID;
 
 		// The UID of the model. Set in the constructor.
 		TUInt32 m_ModelID;

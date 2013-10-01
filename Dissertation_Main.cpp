@@ -6,6 +6,9 @@ using std::stringstream;
 
 #include "Common\Input.h"
 
+#include "Demo\CSceneManager.h"
+using namespace Gen;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -81,6 +84,11 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	bl = UpdateWindow( hWnd );
 	if( bl == 0 )
 		return 3;
+
+	
+	ISceneManager* manager = CreateSceneManager();
+
+	manager->CreateRenderDevice( hWnd );
 
 	//================================================================
 	// End Setup

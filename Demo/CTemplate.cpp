@@ -222,6 +222,28 @@ namespace DX {
 		mHasGeometry = false;
 	}
 
+	// Loads a new texture for this template. Must provide the file name and
+	// full path of the texture. Any old texture will be deleted/overwritten.
+	// Returns true if the texture was loaded, false otherwise.
+	bool CTemplate::LoadTexture(const char* texFileName, ID3D10Device* pDevice)
+	{
+		HRESULT hr = D3DX10CreateShaderResourceViewFromFile( pDevice, texFileName, NULL, NULL, &m_pTexture, NULL );
+
+		if( FAILED( hr ) )
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	// Returns the texture to be used for rendering.
+	ID3D10ShaderResourceView* CTemplate::GetTexture()
+	{
+		return m_pTexture;
+	}
+
+
 	// Creates a new model of this template. Must provide the ID of the model.
 		// Can specify a location for the model to be created at.
 	void CTemplate::CreateModel(TUInt32 modelID, float fX/*=0.0f*/, float fY/*=0.0f*/, float fZ/*=0.0f*/)
@@ -275,10 +297,10 @@ namespace DX {
 	}
 
 	// Returns a pointer to a model at the specified position in the model list.
-	CModel* CTemplate::GetModelByLocation(TUInt32 modelNumber)
+	CModel* CTemplate::GetModelByIndex(TUInt32 modelIndex)
 	{
-		if( modelNumber < m_ModelList.size() )
-			return m_ModelList[modelNumber];
+		if( modelIndex < m_ModelList.size() )
+			return m_ModelList[modelIndex];
 		
 		return NULL;
 	}

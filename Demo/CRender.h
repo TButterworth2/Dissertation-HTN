@@ -65,6 +65,9 @@ namespace DX {
 		// Return the colour of the specular light in the three variables pR, pG and pB.
 		void GetSpecularLight(float* pR, float* pG, float* pB);
 
+		// Check if CRender is ready to be used.
+		bool IsValid();
+
 	private:
 
 		// Storage variables. These are used to store the colours of the ambient and specular light as well as the specular

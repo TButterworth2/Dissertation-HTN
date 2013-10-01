@@ -10,8 +10,6 @@ namespace DX {
 
 		m_TemplateID = templateID;
 
-		m_TextureID = 0;
-
 		m_pWorldMatrix = new CMatrix4x4();
 	}
 
@@ -22,8 +20,6 @@ namespace DX {
 
 		m_TemplateID = templateID;
 
-		m_TextureID = 0;
-
 		m_pWorldMatrix = new CMatrix4x4( CVector3( fX, fY, fZ ) );
 	}
 
@@ -33,8 +29,6 @@ namespace DX {
 		m_ModelID = modelID;
 
 		m_TemplateID = templateID;
-
-		m_TextureID = 0;
 
 		m_pWorldMatrix = new CMatrix4x4( position );
 	}
@@ -58,18 +52,6 @@ namespace DX {
 	// Misc
 	//============================================================
 
-	// Sets the UID of the texture to be used for rendering.
-	void CModel::SetTextureID(TUInt32 texID)
-	{
-		m_TextureID = texID;
-	}
-
-	// Gets the UID of the texture to be used for rendering.
-	TUInt32 CModel::GetTextureID()
-	{
-		return m_TextureID;
-	}
-
 	// Gets the UID of the current model.
 	TUInt32 CModel::GetUID()
 	{
@@ -88,32 +70,38 @@ namespace DX {
 	// Move the model in the world X direction.
 	void CModel::MoveX(float distance)
 	{
+		m_pWorldMatrix->MoveX( distance );
 	}
 
 	// Move the model in the world Y direction.
 	void CModel::MoveY(float distance)
 	{
+		m_pWorldMatrix->MoveY( distance );
 	}
 
 	// Move the model in the world Z direction.
 	void CModel::MoveZ(float distance)
 	{
+		m_pWorldMatrix->MoveZ( distance );
 	}
 
 
 	// Move the model in the local X direction.
 	void CModel::MoveLocalX(float distance)
 	{
+		m_pWorldMatrix->MoveLocalX( distance );
 	}
 
 	// Move the model in the local Y direction.
 	void CModel::MoveLocalY(float distance)
 	{
+		m_pWorldMatrix->MoveLocalY( distance );
 	}
 
 	// Move the model in the local Z direction.
 	void CModel::MoveLocalZ(float distance)
 	{
+		m_pWorldMatrix->MoveLocalZ( distance );
 	}
 
 
@@ -122,16 +110,19 @@ namespace DX {
 	// Set the X position of the model.
 	void CModel::SetX(float position)
 	{
+		m_pWorldMatrix->SetX( position );
 	}
 
 	// Set the Y position of the model.
-	void SetY(float position)
+	void CModel::SetY(float position)
 	{
+		m_pWorldMatrix->SetY( position );
 	}
 
 	// Set the Z position of the model.
 	void CModel::SetZ(float position)
 	{
+		m_pWorldMatrix->SetZ( position );
 	}
 
 
@@ -140,16 +131,19 @@ namespace DX {
 	// Rotate the model around the local X axis.
 	void CModel::RotateX(float angle)
 	{
+		m_pWorldMatrix->RotateLocalX( angle );
 	}
 
 	// Rotate the model around the local Y axis.
 	void CModel::RotateY(float angle)
 	{
+		m_pWorldMatrix->RotateLocalY( angle );
 	}
 
 	// Rotate the model around the local Z axis.
 	void CModel::RotateZ(float angle)
 	{
+		m_pWorldMatrix->RotateLocalZ( angle );
 	}
 
 
@@ -158,26 +152,26 @@ namespace DX {
 	// Get the current X position of the model in world space.
 	float CModel::GetX()
 	{
-		return 0.0f;
+		return m_pWorldMatrix->GetX();
 	}
 
 	// Get the current Y position of the model in world space.
 	float CModel::GetY()
 	{
-		return 0.0f;
+		return m_pWorldMatrix->GetY();
 	}
 
 	// Get the current Z position of the model in world space.
 	float CModel::GetZ()
 	{
-		return 0.0f;
+		return m_pWorldMatrix->GetZ();
 	}
 
 
 	// Get the current position of the model in world space.
 	CVector3 CModel::GetPosition()
 	{
-		return CVector3();
+		return m_pWorldMatrix->GetPosition();
 	}
 
 }// namespace DX

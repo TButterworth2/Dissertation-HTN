@@ -45,6 +45,16 @@ namespace DX {
 		{ return m_TemplateID; }
 
 
+		// Loads a new texture for this template. Must provide the file name and
+		// full path of the texture. Any old texture will be deleted/overwritten.
+		// Returns true if the texture was loaded, false otherwise.
+		bool LoadTexture(const char* texFileName, ID3D10Device* pDevice);
+
+		// Returns the texture to be used for rendering.
+		ID3D10ShaderResourceView* GetTexture();
+
+
+
 		// Creates a new model of this template. Must provide the ID of the model.
 		// Can specify a location for the model to be created at.
 		void CreateModel(TUInt32 modelID, float fX=0.0f, float fY=0.0f, float fZ=0.0f);
@@ -60,7 +70,7 @@ namespace DX {
 		CModel* GetModelByUID(TUInt32 modelID);
 
 		// Returns a pointer to a model at the specified position in the model list.
-		CModel* GetModelByLocation(TUInt32 modelNumber);
+		CModel* GetModelByIndex(TUInt32 modelIndex);
 
 		// Returns the number of models currently associated with this template.
 		TUInt32 ModelCount();
@@ -89,6 +99,8 @@ namespace DX {
 		TUInt32 m_TemplateID;
 
 		vector<CModel*>			m_ModelList;
+
+		ID3D10ShaderResourceView*	m_pTexture;
 
 	};
 

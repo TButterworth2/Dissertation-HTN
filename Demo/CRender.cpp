@@ -66,11 +66,20 @@ namespace DX {
 	// If not then they will be released and cleaned up here.
 	CRender::~CRender()
 	{
+		m_pEffect->Release();	m_pEffect = NULL;
+
+		delete m_pAmbientColour;
+		delete m_pSpecularColour;
 	}
 
 	// Start the render sequence.
 	void CRender::RenderStart()
 	{
+		m_pAmbientLightVar->SetFloatVector( (float*)m_pAmbientColour );
+
+		m_pSpecularLightVar->SetFloatVector( (float*)m_pSpecularColour );
+
+		m_pSpecularPowerVar->SetFloat( m_SpecularPower );
 	}
 
 	// This is the main render function. Only one model can be rendered at a time. The world matrix of the model to be
@@ -87,32 +96,60 @@ namespace DX {
 	// Sets the colour of the ambient light. The old colour will be overwritten.
 	void CRender::SetAmbientLight(float fR, float fG, float fB)
 	{
+		m_pAmbientColour->a = 0;
+		m_pAmbientColour->r = fR;
+		m_pAmbientColour->g = fG;
+		m_pAmbientColour->b = fB;
 	}
 
 	// Sets the colour of the specular light. The old colour will be overwritten.
 	void CRender::SetSpecularColour(float fR, float fG, float fB)
 	{
+		m_pSpecularColour->a = 0;
+		m_pSpecularColour->r = fR;
+		m_pSpecularColour->g = fG;
+		m_pSpecularColour->b = fB;
 	}
 
 	// Sets the specular power. The old value will be overwritten.
 	void CRender::SetSpecularPower(float fPower)
 	{
+		m_SpecularPower = fPower;
 	}
 
 	// Returns the current specular power that is to be used.
 	float CRender::GetSpecularPower()
 	{
-		return 0.0f;
+		return m_SpecularPower;
 	}
 
 	// Return the colour of the ambient light in the three variables pR, pG and pB.
 	void CRender::GetAmbientLight(float* pR, float* pG, float* pB)
 	{
+		*pR = m_pAmbientColour->r;
+		*pG = m_pAmbientColour->g;
+		*pB = m_pAmbientColour->b;
 	}
 
 	// Return the colour of the specular light in the three variables pR, pG and pB.
 	void CRender::GetSpecularLight(float* pR, float* pG, float* pB)
 	{
+		*pR = m_pSpecularColour->r;
+		*pG = m_pSpecularColour->g;
+		*pB = m_pSpecularColour->b;
+	}
+
+	// Check if CRender is ready to be used.
+	bool CRender::IsValid()
+	{
+		if( m_pEffect->IsValid() &&	m_pEffectTechnique->IsValid() &&	m_pAmbientLightVar->IsValid() &&	m_pSpecularLightVar->IsValid() &&
+			m_pSpecularPowerVar->IsValid() &&	m_pModelTextureVar->IsValid() &&	m_pWorldMatrixVar->IsValid()	
+		  )
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 }// namespace DX
