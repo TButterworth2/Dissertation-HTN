@@ -3,13 +3,16 @@
 using gen::CImportXFile;
 
 #include "CTemplate.h"
-
+using namespace Scene;
 using std::pair;
+
+#include <D3DX10.h>
 
 namespace DX {
 
 	// Basic Constructor.
 	CTemplate::CTemplate(UINT ID)
+		: ITemplate( ID )
 	{
 		mHasGeometry = false;
 
@@ -22,6 +25,8 @@ namespace DX {
 		mNumIndices = 0;
 
 		m_TemplateID = ID;
+
+		m_pTexture = NULL;
 	}
 
 	// Basic Destructor.
@@ -103,19 +108,6 @@ namespace DX {
 			offset += 12;
 			++numElts;
 		}
-		if (subMesh.hasTangents)
-		{
-			mVertexElts[numElts].SemanticName = "TANGENT";
-			mVertexElts[numElts].SemanticIndex = 0;
-			mVertexElts[numElts].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			mVertexElts[numElts].AlignedByteOffset = offset;
-			mVertexElts[numElts].InputSlot = 0;
-			mVertexElts[numElts].InputSlotClass = D3D10_INPUT_PER_VERTEX_DATA;
-			mVertexElts[numElts].InstanceDataStepRate = 0;
-
-			offset += 12;
-			++numElts;
-		}
 		if (subMesh.hasTextureCoords)
 		{
 			mVertexElts[numElts].SemanticName = "TEXCOORD";
@@ -127,19 +119,6 @@ namespace DX {
 			mVertexElts[numElts].InstanceDataStepRate = 0;
 
 			offset += 8;
-			++numElts;
-		}
-		if (subMesh.hasVertexColours)
-		{
-			mVertexElts[numElts].SemanticName = "COLOR";
-			mVertexElts[numElts].SemanticIndex = 0;
-			mVertexElts[numElts].Format = DXGI_FORMAT_R8G8B8A8_UNORM; // A RGBA colour with 1 byte (0-255) per component
-			mVertexElts[numElts].AlignedByteOffset = offset;
-			mVertexElts[numElts].InputSlot = 0;
-			mVertexElts[numElts].InputSlotClass = D3D10_INPUT_PER_VERTEX_DATA;
-			mVertexElts[numElts].InstanceDataStepRate = 0;
-
-			offset += 4;
 			++numElts;
 		}
 		mVertexSize = offset;
@@ -222,27 +201,32 @@ namespace DX {
 		mHasGeometry = false;
 	}
 
-	// Loads a new texture for this template. Must provide the file name and
-	// full path of the texture. Any old texture will be deleted/overwritten.
-	// Returns true if the texture was loaded, false otherwise.
-	bool CTemplate::LoadTexture(const char* texFileName, ID3D10Device* pDevice)
+	bool CTemplate::SetTexture(ID3D10Device* device, const char* texFile)
 	{
-		HRESULT hr = D3DX10CreateShaderResourceViewFromFile( pDevice, texFileName, NULL, NULL, &m_pTexture, NULL );
+		D3DX10_IMAGE_LOAD_INFO loadInfo;
+		ZeroMemory( &loadInfo, sizeof(loadInfo) );
+		loadInfo.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+		loadInfo.Format = DXGI_FORMAT_BC1_UNORM;
 
-		if( FAILED( hr ) )
+
+		HRESULT hr = D3DX10CreateShaderResourceViewFromFile( device, texFile, &loadInfo, NULL, &m_pTexture, NULL );
+
+		if( FAILED(hr) )
 		{
+			m_pTexture = NULL;
 			return false;
 		}
 
 		return true;
 	}
 
-	// Returns the texture to be used for rendering.
 	ID3D10ShaderResourceView* CTemplate::GetTexture()
 	{
+		if( m_pTexture = NULL )
+			return 0;
+
 		return m_pTexture;
 	}
-
 
 	// Creates a new model of this template. Must provide the ID of the model.
 		// Can specify a location for the model to be created at.
@@ -309,6 +293,11 @@ namespace DX {
 	TUInt32 CTemplate::ModelCount()
 	{
 		return m_ModelList.size();
+	}
+
+	TUInt32 CTemplate::IndexCount()
+	{
+		return mNumIndices;
 	}
 
 }// namespace DX

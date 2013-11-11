@@ -13,10 +13,73 @@ using gen::TUInt32;
 
 #include "CModel.h"
 
+namespace Scene{
+
+	class ITemplate
+	{
+
+	public:
+
+		// Basic Constructor.
+		ITemplate(TUInt32 ID) {}
+
+		// Basic Destructor. Will release all resources that are left including
+		// the model list.
+		virtual ~ITemplate() {}
+
+
+		// Load the mesh (vertices and indices) of the model. The filename and
+		// full path of the model file must be passed as the parameter.
+		virtual bool Load(ID3D10Device* p_d3dDevice, ID3D10EffectTechnique* p_Technique, const char* meshFile, bool tangents=false) = 0;
+
+		// Sends the necessary data to the GPU ready for the models to be drawn.
+		virtual void Render(ID3D10Device* p_d3dDevice) = 0;
+
+		// This function clears all of the data stored for the mesh.
+		virtual void ReleaseResources() = 0;
+
+		// Returns the UID of this template. Used by the SceneManager to perform
+		// model creation and rendering.
+		virtual TUInt32 GetUID() = 0;
+
+		// Set the texture associate with this template. This will replace any
+		// texture currently loaded.
+		virtual bool SetTexture(ID3D10Device* device, const char* texFile) = 0;
+
+		// Returns the texture associated with this template. Will return 0 if
+		// none exists.
+		virtual ID3D10ShaderResourceView* GetTexture() = 0;
+
+
+		// Creates a new model of this template. Must provide the ID of the model.
+		// Can specify a location for the model to be created at.
+		virtual void CreateModel(TUInt32 modelID, float fX=0.0f, float fY=0.0f, float fZ=0.0f) = 0;
+
+		// Removes a model from the scene. Must pass the UID of the model.
+		// Returns true if the model was removed.
+		virtual bool DeleteModel(TUInt32 modelID) = 0;
+
+		// Removes all models associated with this template from the scene.
+		virtual void DeleteAllModels() = 0;
+
+		// Returns a pointer to a model with a given UID.
+		virtual DX::CModel* GetModelByUID(TUInt32 modelID) = 0;
+
+		// Returns a pointer to a model at the specified position in the model list.
+		virtual DX::CModel* GetModelByIndex(TUInt32 modelIndex) = 0;
+
+		// Returns the number of models currently associated with this template.
+		virtual TUInt32 ModelCount() = 0;
+
+		virtual TUInt32 IndexCount() = 0;
+	};
+
+}// namespace Scene
+
 namespace DX {
 
 	// This class will act as the template for the models to be made from.
-	class CTemplate
+	class CTemplate : public Scene::ITemplate
 	{
 
 	public:
@@ -44,15 +107,13 @@ namespace DX {
 		TUInt32 GetUID()
 		{ return m_TemplateID; }
 
+		// Set the texture associate with this template. This will replace any
+		// texture currently loaded.
+		bool SetTexture(ID3D10Device* device, const char* texFile);
 
-		// Loads a new texture for this template. Must provide the file name and
-		// full path of the texture. Any old texture will be deleted/overwritten.
-		// Returns true if the texture was loaded, false otherwise.
-		bool LoadTexture(const char* texFileName, ID3D10Device* pDevice);
-
-		// Returns the texture to be used for rendering.
+		// Returns the texture associated with this template. Will return 0 if
+		// none exists.
 		ID3D10ShaderResourceView* GetTexture();
-
 
 
 		// Creates a new model of this template. Must provide the ID of the model.
@@ -74,6 +135,8 @@ namespace DX {
 
 		// Returns the number of models currently associated with this template.
 		TUInt32 ModelCount();
+
+		TUInt32 IndexCount();
 
 	private:
 

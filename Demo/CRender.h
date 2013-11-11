@@ -4,8 +4,10 @@
 #include <d3d10.h>
 #include <D3DX10.h>
 
-#include "../Common/Import/Math/CMatrix4x4.h"
+#include "CMatrix4x4.h"
+#include "CVector3.h"
 using gen::CMatrix4x4;
+using gen::CVector3;
 
 namespace DX {
 
@@ -32,11 +34,13 @@ namespace DX {
 		// If not then they will be released and cleaned up here.
 		~CRender();
 
+		void ReleaseResources();
+
 
 	public:
 
 		// Start the render sequence.
-		void RenderStart();
+		void RenderStart(const CVector3* cameraPos);
 
 		// This is the main render function. Only one model can be rendered at a time. The world matrix of the model to be
 		// rendered is required as a parameter. Also the texture ID needs to be passed in for the model.
@@ -86,6 +90,7 @@ namespace DX {
 
 		ID3D10ShaderResourceView* m_pLastTex;
 
+		ID3D10EffectVectorVariable* m_pCameraPosVar;
 
 		ID3D10EffectVectorVariable*	m_pAmbientLightVar;
 		ID3D10EffectVectorVariable*	m_pSpecularLightVar;

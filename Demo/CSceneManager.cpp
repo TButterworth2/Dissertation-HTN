@@ -3,30 +3,43 @@
 
 #include <D3DX10.h>
 
-namespace Gen {
+namespace Scene {
 
 	ISceneManager* CreateSceneManager()
 	{
 		return new DX::CSceneManager();
 	}
 
-}// namespace Gen
+}// namespace Scene
 
 namespace DX {
 
 	// Basic Constructor.
 	CSceneManager::CSceneManager()
 	{
-		//m_pRender = new CRender();
+		m_pRender = NULL;
 		m_pRenderDevice = new CRenderDevice();
 
 		m_NumTemplates = 0;
 		m_NumModels = 0;
+
+		m_ClearColour = CVector4( 0.0f, 0.0f, 0.0f, 0.0f );
+
+		// Insert Placeholders for the future implementation of the model + template creation.
+		CTemplate* baseTemplate = new CTemplate( m_NumTemplates++ );
+		CModel* baseModel = new CModel( m_NumModels, baseTemplate->GetUID() );
+		m_TemplateList.push_back( baseTemplate );
+		m_ModelList.insert( pair< TUInt32, TUInt32 >( m_NumModels++, baseTemplate->GetUID() ) );
 	}
 
 	// Basic Destructor.
 	CSceneManager::~CSceneManager()
 	{
+		DeleteAllTemplates();
+
+		m_pRender->ReleaseResources();
+		m_pRenderDevice->DeleteDevice();
+
 		delete m_pRender;
 		delete m_pRenderDevice;
 	}
@@ -62,16 +75,18 @@ namespace DX {
 		return m_NumTemplates++;
 	}
 
-	// Set/Change the texture associated with a template.
-	void CSceneManager::SetTemplateTexture(const char* textureFile, TUInt32 templateID)
-	{
-		m_TemplateList[templateID]->LoadTexture( textureFile, m_pRenderDevice->GetDevice() );
-	}
-
 	// Creates a new render device. The SceneManager can only have 1 render device at a time.
-	bool CSceneManager::CreateRenderDevice(HWND hWnd)
+	bool CSceneManager::CreateRenderDevice(HWND hWnd, const char* FXFile, const char* techniqueName)
 	{
-		return m_pRenderDevice->SetupDevice( hWnd );
+		if( m_pRenderDevice->SetupDevice( hWnd ) )
+		{
+			m_pRender = new CRender( m_pRenderDevice->GetDevice(), FXFile, techniqueName );
+
+			return m_pRender->IsValid();
+		}
+
+
+		return false;
 	}
 
 	// Destroys the render device.
@@ -81,11 +96,13 @@ namespace DX {
 	}
 
 	// Renders the scene.
-	void CSceneManager::Render(const CVector4& clearColour)
+	void CSceneManager::Render()
 	{
-		m_pRenderDevice->ClearScreen( clearColour );
+		m_pRenderDevice->ClearScreen( m_ClearColour );
 
-		m_pRender->RenderStart();
+		CVector3 camPos = m_pCamera->GetPosition();
+
+		m_pRender->RenderStart( &camPos );// place holder only.
 
 		CTemplate* temp = 0;
 		for(TUInt32 i = 0; i < m_TemplateList.size(); i++)
@@ -94,10 +111,14 @@ namespace DX {
 
 			temp->Render( m_pRenderDevice->GetDevice() );
 
+			ID3D10ShaderResourceView* tex = temp->GetTexture();
+
 			for(TUInt32 model=0; model < temp->ModelCount(); model++)
 			{
 				CModel* current = temp->GetModelByIndex( model );
-				m_pRender->RenderModel( current->GetWorldMatrix(), temp->GetTexture() );
+				m_pRender->RenderModel( current->GetWorldMatrix(), tex );
+
+				m_pRenderDevice->DrawIndexed( temp->IndexCount() );
 			}
 		}
 
@@ -159,9 +180,64 @@ namespace DX {
 		}
 	}
 
+	// Set the colour for the screen to clear to.
+	void CSceneManager::SetClearColour(float fR, float fG, float fB, float fA)
+	{
+		m_ClearColour.Set( fR, fG, fB, fA );
+	}
+
+	// Set the colour of the ambient light in the scene.
+	void CSceneManager::SetAmbientColour(float fR, float fG, float fB)
+	{
+		m_pRender->SetAmbientLight( fR, fG, fB );
+	}
+
+	// Set the colour of the specular light to be used in rendering.
+	void CSceneManager::SetSpecularColour(float fR, float fG, float fB)
+	{
+		m_pRender->SetSpecularColour( fR, fG, fB );
+	}
+
+	Scene::IRTSCamera* CSceneManager::CreateCamera(float fX/*=0.0f*/, float fY/*=0.0f*/, float fZ/*=0.0f*/)
+	{
+		m_pCamera = new CRTSCamera( CVector3( 0.0f, 1.0f, 0.0f ), (-1), (-1), fX, fY, fZ );
+
+		return m_pCamera;
+	}
+
+	void CSceneManager::DeleteCamera()
+	{
+		delete m_pCamera;
+		m_pCamera = NULL;
+	}
+
+	Scene::ILight* CSceneManager::CreateLight()
+	{
+//		Scene::ILight* light = new CLight();
+//		m_LightList.push_back( light );
+
+//		return light;
+		return 0;
+	}
+
+	void CSceneManager::DeleteLight(Scene::ILight* light)
+	{
+	}
+
 	//==========================================================================================
 	// Model Control
 	//==========================================================================================
+
+	// Load a texture and associate it with a template.
+	bool CSceneManager::SetTexture(const char* texFileName, TUInt32 templateID)
+	{
+		if( templateID < m_TemplateList.size() )
+		{
+			return m_TemplateList[templateID]->SetTexture( m_pRenderDevice->GetDevice(), texFileName );
+		}
+
+		return false;
+	}
 
 	// Moves a model in the local X direction by the specified amount.
 	void CSceneManager::MoveLocalX(float amount, TUInt32 modelID)

@@ -72,27 +72,33 @@ namespace DX {
 		if( m_pSwapChain )
 		{
 			m_pSwapChain->Release();
+			m_pSwapChain = NULL;
 		}
 
 		if( m_pRenderTargetView )
 		{
 			m_pRenderTargetView->Release();
+			m_pRenderTargetView = NULL;
 		}
 
 		if( m_pDepthStencilView )
 		{
 			m_pDepthStencilView->Release();
+			m_pDepthStencilView = NULL;
 		}
 
 		if( m_pDepthStencil )
 		{
 			m_pDepthStencil->Release();
+			m_pDepthStencil = NULL;
 		}
 
 		if( m_pd3dDevice )
 		{
 			m_pd3dDevice->ClearState();
 			m_pd3dDevice->Release();
+
+			m_pd3dDevice = NULL;
 		}
 	}
 
@@ -101,6 +107,11 @@ namespace DX {
 	{
 		m_pd3dDevice->ClearRenderTargetView( m_pRenderTargetView, &clearColour[0] );
 		m_pd3dDevice->ClearDepthStencilView( m_pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0 );
+	}
+
+	void CRenderDevice::DrawIndexed(unsigned int numIndices)
+	{
+		m_pd3dDevice->DrawIndexed( numIndices, 0, 0 );
 	}
 
 	// Presents the back buffer to the screen.
@@ -145,13 +156,10 @@ namespace DX {
 		sd.SampleDesc.Quality = 0;
 		sd.OutputWindow = hWnd;                          // Target window
 		sd.Windowed = TRUE;                                // Whether to render in a window (TRUE) or go fullscreen (FALSE)
-		hr = D3D10CreateDeviceAndSwapChain( NULL, D3D10_DRIVER_TYPE_HARDWARE, NULL, D3D10_CREATE_DEVICE_DEBUG,
+		hr = D3D10CreateDeviceAndSwapChain( NULL, D3D10_DRIVER_TYPE_HARDWARE, NULL, 0,
 											D3D10_SDK_VERSION, &sd, &m_pSwapChain, &m_pd3dDevice );
 		if( FAILED( hr ) )
 		{
-			m_pd3dDevice = NULL;
-			m_pSwapChain = NULL;
-
 			MessageBox( NULL, "NO DEVICE OR SWAP CHAIN", "", NULL );
 			return false;
 		}

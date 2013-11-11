@@ -33,6 +33,8 @@ namespace DX {
 		// Clears the screen ready for the scene to be drawn.
 		void ClearScreen(const CVector4& clearColour);
 
+		void DrawIndexed(unsigned int numIndices);
+
 		// Presents the back buffer to the screen.
 		void Present();
 

@@ -1,15 +1,33 @@
 
 #include "CRender.h"
 
+#include <new>
+
 namespace DX {
 
 	// The basic contructor of the CRender class.
 	// The render setup will be performed here.
 	CRender::CRender(ID3D10Device* device, const char* FXFileName, const char* techniqueName)
 	{
-		m_pLastTex = 0;
+		m_SpecularPower = 0.0f;
 
-		ID3D10Blob* pErrors;
+		m_pLastTex = NULL;
+		m_pAmbientColour = new D3DXCOLOR();
+		m_pSpecularColour = new D3DXCOLOR();
+		m_pEffect = NULL;
+		m_pEffectTechnique = NULL;
+		m_pLastTex = NULL;
+		m_pCameraPosVar = NULL;
+		m_pAmbientLightVar = NULL;
+		m_pSpecularLightVar = NULL;
+		m_pSpecularPowerVar = NULL;
+		m_pModelTextureVar = NULL;
+		m_pWorldMatrixVar = NULL;
+
+
+
+
+		ID3D10Blob* pErrors = NULL;
 		DWORD shaderFlags = D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG;
 
 		HRESULT hr = D3DX10CreateEffectFromFile
@@ -17,7 +35,7 @@ namespace DX {
 							FXFileName,
 							0,
 							0,
-							"fx_4_0",
+							"fx_4_1",
 							shaderFlags,
 							0,
 							device,
@@ -38,46 +56,60 @@ namespace DX {
 			{
 				MessageBoxA( NULL, "Failed to create effect from file", "Error", NULL );
 			}
-
-			pErrors->Release();
 		}
-
-		if( m_pEffect->IsValid() )
+		
+		if ( m_pEffect->IsValid() )
 		{
 			m_pEffectTechnique = m_pEffect->GetTechniqueByName( techniqueName );
 
-			if( m_pEffectTechnique->IsValid() == false )
-			{
-				MessageBox( 0, "Error: Failed to create technique", 0, 0 );
-			}
+			//if( m_pEffectTechnique->IsValid() == false )
+			//{
+			//	MessageBox( 0, "Error: Failed to create technique", 0, 0 );
+			//}
+			//else
+			//{
+				m_pAmbientLightVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsVector();
+
+				m_pSpecularLightVar = m_pEffect->GetVariableByName( "SpecularLight" )->AsVector();
+				m_pSpecularPowerVar = m_pEffect->GetVariableByName( "SpecularPower" )->AsScalar();
+
+				m_pModelTextureVar = m_pEffect->GetVariableByName( "ModelTex" )->AsShaderResource();
+
+				m_pWorldMatrixVar = m_pEffect->GetVariableByName( "WorldMatrix" )->AsMatrix();
+
+				m_pCameraPosVar = m_pEffect->GetVariableByName( "CameraPos" )->AsVector();
+			//}
 		}
-
-		m_pAmbientLightVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsVector();
-
-		m_pSpecularLightVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsVector();
-		m_pSpecularPowerVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsScalar();
-
-		m_pModelTextureVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsShaderResource();
-
-		m_pWorldMatrixVar = m_pEffect->GetVariableByName( "AmbientLight" )->AsMatrix();
 	}
 
 	// Basic destructor. Checks to see if the render variables have been released.
 	// If not then they will be released and cleaned up here.
 	CRender::~CRender()
 	{
-		m_pEffect->Release();	m_pEffect = NULL;
+		ReleaseResources();
 
-		delete m_pAmbientColour;
-		delete m_pSpecularColour;
+		if( m_pAmbientColour )
+			delete m_pAmbientColour;
+
+		if( m_pSpecularColour )
+			delete m_pSpecularColour;
+	}
+
+	void CRender::ReleaseResources()
+	{
+		if( m_pLastTex ) m_pLastTex->Release();	m_pLastTex = NULL;
+
+		if( m_pEffect ) m_pEffect->Release();	m_pEffect = NULL;
 	}
 
 	// Start the render sequence.
-	void CRender::RenderStart()
+	void CRender::RenderStart(const CVector3* cameraPos)
 	{
-		m_pAmbientLightVar->SetFloatVector( (float*)m_pAmbientColour );
+		if( m_pAmbientColour )
+			m_pAmbientLightVar->SetFloatVector( (float*)m_pAmbientColour );
 
-		m_pSpecularLightVar->SetFloatVector( (float*)m_pSpecularColour );
+		if( m_pSpecularColour )
+			m_pSpecularLightVar->SetFloatVector( (float*)m_pSpecularColour );
 
 		m_pSpecularPowerVar->SetFloat( m_SpecularPower );
 	}

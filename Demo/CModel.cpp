@@ -10,6 +10,8 @@ namespace DX {
 
 		m_TemplateID = templateID;
 
+		m_TextureID = 0;
+
 		m_pWorldMatrix = new CMatrix4x4();
 	}
 
@@ -20,6 +22,8 @@ namespace DX {
 
 		m_TemplateID = templateID;
 
+		m_TextureID = 0;
+
 		m_pWorldMatrix = new CMatrix4x4( CVector3( fX, fY, fZ ) );
 	}
 
@@ -29,6 +33,8 @@ namespace DX {
 		m_ModelID = modelID;
 
 		m_TemplateID = templateID;
+
+		m_TextureID = 0;
 
 		m_pWorldMatrix = new CMatrix4x4( position );
 	}
@@ -51,6 +57,18 @@ namespace DX {
 	//============================================================
 	// Misc
 	//============================================================
+
+	// Sets the UID of the texture to be used for rendering.
+	void CModel::SetTextureID(TUInt32 texID)
+	{
+		m_TextureID = texID;
+	}
+
+	// Gets the UID of the texture to be used for rendering.
+	TUInt32 CModel::GetTextureID()
+	{
+		return m_TextureID;
+	}
 
 	// Gets the UID of the current model.
 	TUInt32 CModel::GetUID()
@@ -131,19 +149,19 @@ namespace DX {
 	// Rotate the model around the local X axis.
 	void CModel::RotateX(float angle)
 	{
-		m_pWorldMatrix->RotateLocalX( angle );
+		m_pWorldMatrix->RotateX( angle );
 	}
 
 	// Rotate the model around the local Y axis.
 	void CModel::RotateY(float angle)
 	{
-		m_pWorldMatrix->RotateLocalY( angle );
+		m_pWorldMatrix->RotateY( angle );
 	}
 
 	// Rotate the model around the local Z axis.
 	void CModel::RotateZ(float angle)
 	{
-		m_pWorldMatrix->RotateLocalZ( angle );
+		m_pWorldMatrix->RotateZ( angle );
 	}
 
 
@@ -171,7 +189,7 @@ namespace DX {
 	// Get the current position of the model in world space.
 	CVector3 CModel::GetPosition()
 	{
-		return m_pWorldMatrix->GetPosition();
+		return m_pWorldMatrix->Position();
 	}
 
 }// namespace DX

@@ -7,7 +7,8 @@ using std::stringstream;
 #include "Common\Input.h"
 
 #include "Demo\CSceneManager.h"
-using namespace Gen;
+using namespace Scene;
+using gen::CVector3;	using gen::CVector4;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -41,6 +42,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+	const char* BASIC = "BasicRender";
+	const char* PIXEL = "PixelLighting";
+
 	//================================================================
 	// Setup
 	//================================================================
@@ -85,10 +89,29 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	if( bl == 0 )
 		return 3;
 
-	
-	ISceneManager* manager = CreateSceneManager();
 
-	manager->CreateRenderDevice( hWnd );
+	ISceneManager* sceneManager = CreateSceneManager();
+
+	sceneManager->CreateRenderDevice( hWnd, "..\\..\\Dissertation-HTN\\Demo\\effects.fx", PIXEL );
+
+	CVector3 ambientColour = CVector3( 0.4f, 0.4f, 0.4f );
+	CVector3 specularColour = CVector3( 0.8f, 0.8f, 0.8f );
+	CVector4 clearColour = CVector4( 0.0f, 0.0f, 0.0f, 1.0f );
+
+	sceneManager->SetClearColour( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
+	sceneManager->SetAmbientColour( ambientColour.x, ambientColour.y, ambientColour.z );
+
+	unsigned int cubeTemplate=0, cube=0;
+	cubeTemplate = sceneManager->CreateTemplate( "..\\..\\Dissertation-HTN\\Demo\\Media\\cube.x" );
+	cube = sceneManager->CreateModel( cubeTemplate );
+
+	unsigned int planetTemp, planet;
+
+	planetTemp = sceneManager->CreateTemplate( "..\\..\\Dissertation-HTN\\Demo\\Media\\planet.x" );
+	planet = sceneManager->CreateModel( planetTemp );
+	sceneManager->MoveWorldZ( 1000.0f, planet );
+
+	IRTSCamera* camera = sceneManager->CreateCamera( 0.0f, 10.0f, -20.0f );
 
 	//================================================================
 	// End Setup
@@ -97,6 +120,8 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	//================================================================
 	// Main Loop
 	//================================================================
+
+	
 	
 	MSG msg;
 	ZeroMemory( &msg, sizeof(msg) );
@@ -112,12 +137,28 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		}
 		else
 		{
+
+			sceneManager->Render();
+
 			if( KeyHit( Key_Escape ) )
 			{
 				running = false;
 			}
+
+			if( KeyHeld( Key_W ) )
+			{
+				camera->MoveLocalZ( 0.001f );
+			}
+			else if( KeyHeld( Key_S ) )
+			{
+				camera->MoveLocalZ( -0.001f );
+			}
 		}
 	}
+
+	sceneManager->DeleteCamera();
+
+	delete sceneManager;
 
 	return 0;
 }
