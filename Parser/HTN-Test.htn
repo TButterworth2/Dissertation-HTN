@@ -1,0 +1,77 @@
+
+DefeatOpponent(Team, EnemyTeam, DomPoints)
+{
+	Task:
+		defeat-opponent(Team, EnemyTeam, DomPoints)
+	Subtask:
+		a0 = subteam(team1, Team, n)
+		a1 = subteam(team2, Team, !team1)
+		a2 = control-all-points(team1, DomPoints)
+		a3 = eliminate-enemy-team(team2, EnemyTeam)
+	Constraint:
+		Team > 40
+		n = 4
+		a0 <- a1; "<-" mean Comes before, "-" means same time as, "->" means comes after
+		a1 <- a2
+		a2 <- a3
+}
+
+DefeatOpponentForce(Team, EnemyTeam)
+{
+	Task:
+		defeat-opponent-force(Team, EnemyTeam)
+	Subtask:
+		a0 = eliminate-enemy-team(Team, EnemyTeam)
+	Constraint:
+		Team > 31
+}
+
+DefeatOpponentPoints(Team, DomPoints)
+{
+	Task:
+		defeat-opponent-points(Team, DomPoints)
+	Subtask:
+		a0 = control-all-points(Team, DomPoints)
+	Constraint:
+		Team > 2
+}
+
+ControlAllPoints(Team, DomPoints)
+{
+	Task:
+		control-all-points(Team, DomPoints)
+	Subtask:
+		a0 = capture-dom-points(Team, DomPoints)
+		a1 = hold-dom-points(Team, DomPoints)
+	Constraint:
+		Team > 1
+		n = 2
+		a0 <- a1
+		a1 <- a2
+}
+
+EliminateEnemyTeam(Team, EnemyTeam)
+{
+	Task:
+		eliminate-enemy-team(Team, EnemyTeam)
+	Subtask:
+		a0 = split-into-company(Team, CO1, CO2)
+		a1 = command-company(CO1)
+		a2 = command-company(CO2)
+	Constraint:
+		(Team > 20)
+		a0 <- a1
+		a0 <- a2
+		a1 - a2
+}
+
+Subteam(OutTeam, InTeam, N)
+{
+	Task:
+		subteam(OutTeam, InTeam, N)
+	Subtask:
+		a0 = !split-team(OutTeam, InTeam, N)
+	Constraint:
+		InTeam > 0
+		N > 0
+}

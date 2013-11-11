@@ -1,0 +1,88 @@
+ControlPointsAndHunt(Team, EnemyTeam, CapPoints)
+{
+	Task:
+		control-points-and-hunt(Team, EnemyTeam, CapPoints)
+	Vars:
+		a
+		b
+		c
+		d
+		t1:int*
+		t2:int*
+		2:int
+		n:int
+		10:int
+	SubTask:
+		a = !split-team(Team, t1, n)
+		b = !split-team(Team, t2, !t1)
+		c = control-all-points(t1, CapPoints)
+		d = hunt-enemy(t2, EnemyTeam)
+	Constraints:
+		a->b
+		b->c
+		b->d
+		c--d
+		(Team/2) > EnemyTeam
+		n = 10
+}
+
+ControlAllPoints
+{
+	Task:
+		control-all-points(Team:int*, CapPoints:int)
+	Vars:
+		a
+		b
+		c
+		d
+		e
+		f
+		g
+		h
+		t1:uint*
+		t2:uint*
+		pl1:uint*
+		pl2:uint*
+		3:int
+		0:int
+		1:int
+	Subtask:
+		a = !split-team(Team, t1, HALF)
+		b = !split-team(Team, t2, !t1)
+		c = capture-point(t1, CapPoints, 0)
+		d = capture-point(t2, CapPoints, 1)
+		d = !split-team(t1, pl1, HALF)
+		e = !SplitTeam(t1, pl2, !pl1)
+		f = hold-point(pl1, CapPoints, 0)
+		g = hold-point(pl2, CapPoints, 1)
+		h = !patrol-points(t2, CapPoints)
+	Constraints:
+		a->b
+		b->c
+		c->d
+		d->e
+		d->f
+		e--f
+		d->g
+		e->g
+		f->g
+		Team>3
+}
+
+HoldPoint
+{
+	Task:
+		hold-point(Team:int*, CapPoints:int*, Index:int)
+	Vars:
+	1 : int
+	0 : int
+	point : int
+	a :func(int*, int)
+	Subtask:
+		a = !GuardPoint(Team, point)
+	Constraints:
+		Team>=1
+		CapPoints>0
+		Index>=0
+		point=CapPoints[Index]
+}
